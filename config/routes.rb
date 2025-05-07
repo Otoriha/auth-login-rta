@@ -18,6 +18,16 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
-  # Defines the root path route ("/")
-  root "sessions#create"
+  # ログイン関連
+  get 'login' => 'sessions#new', as: :login
+  delete 'logout' => 'sessions#destroy', as: :logout
+
+  # OmniAuth関連
+  post '/auth/:provider', to: lambda { |_| [404, {}, ["Not Found"]] }
+  get 'auth/:provider/callback' => 'omniauth_callbacks#callback'
+  get 'auth/failure' => 'omniauth_callbacks#failure'
+
+
+  # ルートパス
+  root 'sessions#new'
 end
