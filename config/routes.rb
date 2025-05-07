@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  get "home/index"
+  get "users/show"
+  get "users/edit"
+  get "users/update"
+  get "users/destroy"
+  get "rankings/index"
+  get "providers/index"
   get "sessions/create"
   get "sessions/destroy"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
