@@ -1,0 +1,17 @@
+<div class="bg-white rounded-lg shadow p-4 mb-6">
+  <h2 class="text-lg font-medium mb-4">認証ステータス</h2>
+  <div class="space-y-2">
+    <div class="flex items-center">
+      <div class="w-6 h-6 rounded-full <%= current_user.authentications.exists?(provider: 'github') ? 'bg-green-500' : 'bg-gray-300' %> mr-2"></div>
+      <span>GitHub: <%= current_user.authentications.exists?(provider: 'github') ? '連携済み' : '未連携' %></span>
+    </div>
+    <div class="flex items-center">
+      <div class="w-6 h-6 rounded-full <%= current_user.authentications.exists?(provider: 'twitter2') ? 'bg-green-500' : 'bg-gray-300' %> mr-2"></div>
+      <span>Twitter: <%= current_user.authentications.exists?(provider: 'twitter2') ? '連携済み' : '未連携' %></span>
+    </div>
+    <div class="flex items-center">
+      <div class="w-6 h-6 rounded-full <%= current_user.authentications.exists?(provider: 'google_oauth2') ? 'bg-green-500' : 'bg-gray-300' %> mr-2"></div>
+      <span>Google: <%= current_user.authentications.exists?(provider: 'google_oauth2') ? '連携済み' : '未連携' %></span>
+    </div>
+  </div>
+</div>

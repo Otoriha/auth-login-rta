@@ -19,15 +19,14 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   # ログイン関連
-  get 'login' => 'sessions#new', as: :login
-  delete 'logout' => 'sessions#destroy', as: :logout
+  get "login" => "sessions#new", as: :login
+  delete "logout" => "sessions#destroy", as: :logout
 
   # OmniAuth関連
-  post '/auth/:provider', to: lambda { |_| [404, {}, ["Not Found"]] }
-  get 'auth/:provider/callback' => 'omniauth_callbacks#callback'
-  get 'auth/failure' => 'omniauth_callbacks#failure'
-
+  get "auth/:provider/callback" => "omniauth_callbacks#callback"
+  get "auth/failure" => "omniauth_callbacks#failure"
+  get "auth_flow" => "auth_flow#start", as: :auth_flow
 
   # ルートパス
-  root 'sessions#new'
+  root "rankings#index"
 end

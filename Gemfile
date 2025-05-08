@@ -122,5 +122,6 @@ gem "omniauth"
 gem "omniauth-rails_csrf_protection" # CSRF対策
 gem "omniauth-github"
 gem "omniauth-twitter2"
+gem "omniauth-google-oauth2"
 gem "octokit", "~> 6.1"
 gem "dotenv-rails", group: %i[ development test ]
