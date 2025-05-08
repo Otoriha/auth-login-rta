@@ -33,7 +33,7 @@ class OmniauthCallbacksController < ApplicationController
     # 認証フローを継続するか中断するかの判断
     if session[:auth_flow] && session[:auth_flow][:step] > 1
       # 既に一部の認証が完了している場合は、一旦ダッシュボードへ
-      redirect_to dashboard_path, alert: "#{params[:provider]&.capitalize || '認証プロバイダー'}での認証に失敗しました: #{error_message}"
+      redirect_to rankings_index_path, alert: "#{params[:provider]&.capitalize || '認証プロバイダー'}での認証に失敗しました: #{error_message}"
     else
       # まだ何も認証が完了していない場合はログイン画面へ
       reset_auth_flow
@@ -195,11 +195,20 @@ class OmniauthCallbacksController < ApplicationController
     end
 
     # ダッシュボードへリダイレクト
-    redirect_to dashboard_path
+    redirect_to rankings_index_path
   end
 
   def reset_auth_flow
     session[:auth_flow] = nil
+  end
+
+  def mark_auth_step_completed(provider)
+    session[:auth_flow][:completed] ||= []
+    session[:auth_flow][:completed] << provider unless session[:auth_flow][:completed].include?(provider)
+  end
+
+  def advance_auth_flow
+    session[:auth_flow][:step] = session[:auth_flow][:step] + 1
   end
 
   # 以下は既存のヘルパーメソッド

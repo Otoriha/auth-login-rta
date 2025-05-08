@@ -1,0 +1,54 @@
+<% if session[:auth_flow].present? %>
+  <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">ログインRTA 進捗状況</h2>
+
+    <div class="flex items-center justify-between mb-2">
+      <% steps = [
+        { name: "GitHub", provider: "github" },
+        { name: "Twitter", provider: "twitter2" },
+        { name: "Google", provider: "google_oauth2" }
+      ] %>
+
+      <% steps.each_with_index do |step, index| %>
+        <%
+          is_completed = session[:auth_flow][:completed]&.include?(step[:provider])
+          is_current = session[:auth_flow][:step] == index + 1 && !is_completed
+          status_class = is_completed ? "bg-green-500 text-white" : 
+                         is_current ? "bg-blue-500 text-white animate-pulse" : "bg-gray-200"
+        %>
+
+        <div class="flex flex-col items-center">
+          <div class="relative">
+            <div class="w-10 h-10 flex items-center justify-center rounded-full <%= status_class %>">
+              <%= index + 1 %>
+            </div>
+            <% if is_completed %>
+              <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+            <% end %>
+          </div>
+          <span class="mt-2 text-sm font-medium"><%= step[:name] %></span>
+        </div>
+
+        <% if index < steps.length - 1 %>
+          <%
+            line_class = if index < session[:auth_flow][:step] - 1
+                          "bg-green-500"
+                        else
+                          "bg-gray-200"
+                        end
+          %>
+          <div class="flex-1 h-1 <%= line_class %>"></div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="mt-4 text-gray-600 text-sm">
+      <p>現在のステップ: <%= session[:auth_flow][:step] %> / 3</p>
+      <p>開始時間: <%= Time.at(session[:auth_flow][:started_at]).strftime('%H:%M:%S') if session[:auth_flow][:started_at] %></p>
+    </div>
+  </div>
+<% end %>

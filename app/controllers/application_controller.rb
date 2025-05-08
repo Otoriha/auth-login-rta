@@ -24,6 +24,19 @@ class ApplicationController < ActionController::Base
     session[:auth_flow][:step] = session[:auth_flow][:step] + 1
   end
 
+  def auth_flow_expired?
+    # 認証フローが存在しない、または開始から30分以上経過している場合は期限切れ
+    !session[:auth_flow] ||
+      (session[:auth_flow][:started_at] &&
+       Time.parse(session[:auth_flow][:started_at].to_s) < 30.minutes.ago)
+  end
+
+  def handle_expired_auth_flow
+    flash[:alert] = "認証セッションの有効期限が切れました。再度お試しください。"
+    reset_auth_flow
+    redirect_to login_path
+  end
+
   private
 
   def current_user
