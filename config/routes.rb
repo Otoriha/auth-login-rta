@@ -26,6 +26,10 @@ Rails.application.routes.draw do
   get "auth/:provider/callback" => "omniauth_callbacks#callback"
   get "auth/failure" => "omniauth_callbacks#failure"
   get "auth_flow" => "auth_flow#start", as: :auth_flow
+  get "auth_flow/github" => "auth_flow#github", as: :auth_flow_github
+  get "auth_flow/twitter" => "auth_flow#twitter", as: :auth_flow_twitter
+  get "auth_flow/google" => "auth_flow#google", as: :auth_flow_google
+  get "auth_flow/complete" => "auth_flow#complete", as: :auth_flow_complete
 
   # ルートパス
   root "rankings#index"

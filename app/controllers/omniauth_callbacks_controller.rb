@@ -147,20 +147,20 @@ class OmniauthCallbacksController < ApplicationController
       if completed.include?("github")
         # GitHubが完了したらTwitterへ
         auth_flow[:step] = 2
-        redirect_to "/auth/twitter2"
+        redirect_to auth_flow_twitter_path
       else
         # まだGitHubが完了していなければGitHubへ
-        redirect_to "/auth/github"
+        redirect_to auth_flow_github_path
       end
     when 2
       # Twitter認証のステップ
       if completed.include?("twitter2")
         # Twitterが完了したらGoogleへ
         auth_flow[:step] = 3
-        redirect_to "/auth/google_oauth2"
+        redirect_to auth_flow_google_path
       else
         # まだTwitterが完了していなければTwitterへ
-        redirect_to "/auth/twitter2"
+        redirect_to auth_flow_twitter_path
       end
     when 3
       # Google認証のステップ
@@ -169,14 +169,14 @@ class OmniauthCallbacksController < ApplicationController
         auth_flow[:step] = 4
 
         # 認証完了後の処理
-        finalize_auth_flow
+        redirect_to auth_flow_complete_path
       else
         # まだGoogleが完了していなければGoogleへ
-        redirect_to "/auth/google_oauth2"
+        redirect_to auth_flow_google_path
       end
     else
       # 想定外のステップの場合はダッシュボードへ
-      finalize_auth_flow
+      redirect_to rankings_index_path
     end
   end
 

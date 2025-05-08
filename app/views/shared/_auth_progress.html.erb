@@ -13,7 +13,7 @@
         <%
           is_completed = session[:auth_flow][:completed]&.include?(step[:provider])
           is_current = session[:auth_flow][:step] == index + 1 && !is_completed
-          status_class = is_completed ? "bg-green-500 text-white" : 
+          status_class = is_completed ? "bg-green-500 text-white" :
                          is_current ? "bg-blue-500 text-white animate-pulse" : "bg-gray-200"
         %>
 
@@ -35,7 +35,8 @@
 
         <% if index < steps.length - 1 %>
           <%
-            line_class = if index < session[:auth_flow][:step] - 1
+            current_step = session[:auth_flow][:step].to_i
+            line_class = if index < current_step - 1
                           "bg-green-500"
                         else
                           "bg-gray-200"
