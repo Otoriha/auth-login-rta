@@ -80,9 +80,9 @@ class AuthFlowController < ApplicationController
 
     all_providers_completed = if auth_flow_session_exists && completed_steps_array.is_a?(Array)
                                 providers.all? { |p| completed_steps_array.include?(p) }
-                              else
+    else
                                 false
-                              end
+    end
 
     unless auth_flow_session_exists && all_providers_completed
       flash[:alert] = "すべての認証を完了できませんでした。お手数ですが、最初からやり直してください。"

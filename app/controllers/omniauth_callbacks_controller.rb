@@ -68,7 +68,7 @@ class OmniauthCallbacksController < ApplicationController
       # ユーザーがログインしていない - ログインまたは新規登録のケース
       handle_non_logged_in_user(authentication, auth)
     end
-    return
+    nil
   end
 
   def handle_logged_in_user(authentication, auth)

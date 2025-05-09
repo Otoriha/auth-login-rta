@@ -31,7 +31,7 @@ Rails.application.routes.draw do
   get "auth_flow/twitter" => "auth_flow#twitter", as: :auth_flow_twitter
   get "auth_flow/google" => "auth_flow#google", as: :auth_flow_google
   get "auth_flow/complete" => "auth_flow#complete", as: :auth_flow_complete
-
+  post "rankings/reset_record" => "rankings#reset_record", as: :reset_record
   # ルートパス
   root "rankings#index"
 end
