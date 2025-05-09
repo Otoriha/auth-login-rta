@@ -9,19 +9,21 @@
     </div>
   <% end %>
 
-  <div class="space-y-4">
+  <%= form_with url: auth_flow_path, method: :get, class: "space-y-4" do |f| %>
+    <!-- 名前入力フィールド -->
+    <div>
+      <%= f.label :name, "ニックネーム", class: "block text-gray-700 font-bold mb-2" %>
+      <%= f.text_field :name, required: true, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: "あなたの名前を入力" %>
+      <p class="text-sm text-gray-500 mt-1">この名前がランキングに表示されます</p>
+    </div>
+
     <!-- RTA認証フローボタン -->
     <div class="mt-4">
       <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
         <p class="text-yellow-700 font-bold">ログインRTAにチャレンジ！</p>
         <p class="text-yellow-700">GitHub→Twitter→Googleの順で認証を完了させよう！</p>
       </div>
-      <%= button_to auth_flow_path, method: :get, class: "w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-lg transition duration-300 text-lg" do %>
-        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-        </svg>
-        ログインRTAをスタート！
-      <% end %>
+      <%= f.submit "ログインRTAをスタート！", class: "w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-lg transition duration-300 text-lg" %>
     </div>
-  </div>
+  <% end %>
 </div>

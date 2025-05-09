@@ -33,20 +33,8 @@ class OmniauthCallbacksController < ApplicationController
 
     Rails.logger.debug "Session after mark_auth_step_completed: #{session[:auth_flow].inspect}"
 
-    if provider == "github"
-      session[:auth_flow]["step"] = 2
-      Rails.logger.debug "Session before redirect: #{session[:auth_flow].inspect}"
-      redirect_to auth_flow_twitter_path
-    elsif provider == "twitter2"
-      session[:auth_flow]["step"] = 3
-      redirect_to auth_flow_google_path
-    elsif provider == "google_oauth2"
-      session[:auth_flow]["step"] = 4
-      redirect_to auth_flow_complete_path
-    else
-      # 次のステップへリダイレクト
-      redirect_to_next_auth_step
-    end
+    # 次のステップへリダイレクト
+    redirect_to_next_auth_step and return
   end
 
   def failure
@@ -171,36 +159,34 @@ class OmniauthCallbacksController < ApplicationController
       if completed.include?("github")
         # GitHubが完了したらTwitterへ
         auth_flow["step"] = 2
-        redirect_to auth_flow_twitter_path
+        redirect_to auth_flow_twitter_path and return
       else
         # まだGitHubが完了していなければGitHubへ
-        redirect_to auth_flow_github_path
+        redirect_to auth_flow_github_path and return
       end
     when 2
       # Twitter認証のステップ
       if completed.include?("twitter2")
         # Twitterが完了したらGoogleへ
         auth_flow["step"] = 3
-        redirect_to auth_flow_google_path
+        redirect_to auth_flow_google_path and return
       else
         # まだTwitterが完了していなければTwitterへ
-        redirect_to auth_flow_twitter_path
+        redirect_to auth_flow_twitter_path and return
       end
     when 3
       # Google認証のステップ
       if completed.include?("google_oauth2")
         # 全ての認証が完了
         auth_flow["step"] = 4
-
-        # 認証完了後の処理
-        redirect_to auth_flow_complete_path
+        redirect_to auth_flow_complete_path and return
       else
         # まだGoogleが完了していなければGoogleへ
-        redirect_to auth_flow_google_path
+        redirect_to auth_flow_google_path and return
       end
     else
       # 想定外のステップの場合はダッシュボードへ
-      redirect_to rankings_index_path
+      redirect_to rankings_index_path and return
     end
   end
 

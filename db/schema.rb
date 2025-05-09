@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_07_022310) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_09_012724) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -34,6 +34,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_07_022310) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "auth_started_at"
+    t.datetime "auth_completed_at"
+    t.integer "auth_duration"
   end
 
   add_foreign_key "authentications", "users"
