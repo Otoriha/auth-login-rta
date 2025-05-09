@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   delete "logout" => "sessions#destroy", as: :logout
 
   # OmniAuth関連
+  post "auth/:provider" => "omniauth_callbacks#passthru", as: :auth_provider
   get "auth/:provider/callback" => "omniauth_callbacks#callback"
   get "auth/failure" => "omniauth_callbacks#failure"
   get "auth_flow" => "auth_flow#start", as: :auth_flow

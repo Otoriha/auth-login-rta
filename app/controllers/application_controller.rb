@@ -10,25 +10,25 @@ class ApplicationController < ActionController::Base
   end
 
   def auth_flow_completed
-    current_auth_flow[:completed] || []
+    current_auth_flow["completed"] || []
   end
 
   def mark_auth_step_completed(provider)
     session[:auth_flow] ||= { step: 1, completed: [] }
-    session[:auth_flow][:completed] ||= []
-    session[:auth_flow][:completed] << provider unless session[:auth_flow][:completed].include?(provider)
+    session[:auth_flow]["completed"] ||= []
+    session[:auth_flow]["completed"] << provider unless session[:auth_flow]["completed"].include?(provider)
   end
 
   def advance_auth_flow
     session[:auth_flow] ||= { step: 1, completed: [] }
-    session[:auth_flow][:step] = session[:auth_flow][:step] + 1
+    session[:auth_flow]["step"] = session[:auth_flow]["step"] + 1
   end
 
   def auth_flow_expired?
     # 認証フローが存在しない、または開始から30分以上経過している場合は期限切れ
     !session[:auth_flow] ||
-      (session[:auth_flow][:started_at] &&
-       Time.parse(session[:auth_flow][:started_at].to_s) < 30.minutes.ago)
+      (session[:auth_flow]["started_at"] &&
+       Time.parse(session[:auth_flow]["started_at"].to_s) < 30.minutes.ago)
   end
 
   def handle_expired_auth_flow

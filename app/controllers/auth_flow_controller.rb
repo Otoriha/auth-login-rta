@@ -25,7 +25,12 @@ class AuthFlowController < ApplicationController
 
   def twitter
     # Twitter認証画面を表示
-    unless session[:auth_flow] && session[:auth_flow][:completed]&.include?("github")
+    Rails.logger.debug "=== Twitter Action Debug ==="
+    Rails.logger.debug "Session in twitter action: #{session[:auth_flow].inspect}"
+    Rails.logger.debug "Auth flow completed: #{auth_flow_completed.inspect}"
+    Rails.logger.debug "Includes github?: #{auth_flow_completed.include?('github')}"
+
+    unless auth_flow_completed.include?("github")
       flash[:alert] = "GitHubでの認証が必要です"
       redirect_to auth_flow_github_path
     end
@@ -33,7 +38,7 @@ class AuthFlowController < ApplicationController
 
   def google
     # Google認証画面を表示
-    unless session[:auth_flow] && session[:auth_flow][:completed]&.include?("twitter2")
+    unless auth_flow_completed.include?("twitter2")
       flash[:alert] = "Twitterでの認証が必要です"
       redirect_to auth_flow_twitter_path
     end
@@ -42,7 +47,7 @@ class AuthFlowController < ApplicationController
   def complete
     # 認証完了画面を表示
     providers = %w[github twitter2 google_oauth2]
-    unless session[:auth_flow] && providers.all? { |p| session[:auth_flow][:completed]&.include?(p) }
+    unless providers.all? { |p| auth_flow_completed.include?(p) }
       flash[:alert] = "すべての認証を完了してください"
       redirect_to auth_flow_github_path
     end

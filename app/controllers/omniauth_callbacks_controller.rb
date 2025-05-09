@@ -1,19 +1,28 @@
 class OmniauthCallbacksController < ApplicationController
   before_action :check_auth_flow_expiration, only: [ :callback ]
 
+  def passthru
+    # OmniAuthのデフォルトのpassthru処理を使用
+    render status: 404, plain: "Not found"
+  end
+
   def callback
     # 認証情報の取得
     auth = request.env["omniauth.auth"]
     provider = auth.provider
+
+    Rails.logger.debug "=== Auth Flow Debug ==="
+    Rails.logger.debug "Provider: #{provider}"
+    Rails.logger.debug "Session before: #{session[:auth_flow].inspect}"
 
     # 既存の認証情報を検索
     authentication = Authentication.find_by(provider: provider, uid: auth.uid)
 
     # 認証フローの初期化（初回のみ）
     session[:auth_flow] ||= {
-      step: 1,
-      completed: [],
-      started_at: Time.current
+      "step" => 1,
+      "completed" => [],
+      "started_at" => Time.current
     }
 
     # 現在の認証プロバイダーを処理
@@ -22,8 +31,22 @@ class OmniauthCallbacksController < ApplicationController
     # 認証プロバイダーを完了済みとしてマーク
     mark_auth_step_completed(provider)
 
-    # 次のステップへリダイレクト
-    redirect_to_next_auth_step
+    Rails.logger.debug "Session after mark_auth_step_completed: #{session[:auth_flow].inspect}"
+
+    if provider == "github"
+      session[:auth_flow]["step"] = 2
+      Rails.logger.debug "Session before redirect: #{session[:auth_flow].inspect}"
+      redirect_to auth_flow_twitter_path
+    elsif provider == "twitter2"
+      session[:auth_flow]["step"] = 3
+      redirect_to auth_flow_google_path
+    elsif provider == "google_oauth2"
+      session[:auth_flow]["step"] = 4
+      redirect_to auth_flow_complete_path
+    else
+      # 次のステップへリダイレクト
+      redirect_to_next_auth_step
+    end
   end
 
   def failure
@@ -31,7 +54,7 @@ class OmniauthCallbacksController < ApplicationController
     error_message = params[:message] || "認証に失敗しました"
 
     # 認証フローを継続するか中断するかの判断
-    if session[:auth_flow] && session[:auth_flow][:step] > 1
+    if session[:auth_flow] && session[:auth_flow]["step"] > 1
       # 既に一部の認証が完了している場合は、一旦ダッシュボードへ
       redirect_to rankings_index_path, alert: "#{params[:provider]&.capitalize || '認証プロバイダー'}での認証に失敗しました: #{error_message}"
     else
@@ -57,6 +80,7 @@ class OmniauthCallbacksController < ApplicationController
       # ユーザーがログインしていない - ログインまたは新規登録のケース
       handle_non_logged_in_user(authentication, auth)
     end
+    return
   end
 
   def handle_logged_in_user(authentication, auth)
@@ -113,7 +137,7 @@ class OmniauthCallbacksController < ApplicationController
     update_authentication(authentication, auth)
 
     # 認証フローのユーザーIDを設定
-    session[:auth_flow][:user_id] = authentication.user_id if session[:auth_flow]
+    session[:auth_flow]["user_id"] = authentication.user_id if session[:auth_flow]
   end
 
   def register_and_login_user(auth)
@@ -128,7 +152,7 @@ class OmniauthCallbacksController < ApplicationController
       session[:user_id] = user.id
 
       # 認証フローのユーザーIDを設定
-      session[:auth_flow][:user_id] = user.id if session[:auth_flow]
+      session[:auth_flow]["user_id"] = user.id if session[:auth_flow]
     end
 
     user
@@ -137,8 +161,8 @@ class OmniauthCallbacksController < ApplicationController
   def redirect_to_next_auth_step
     # 認証フローの状態を取得
     auth_flow = session[:auth_flow]
-    current_step = auth_flow[:step]
-    completed = auth_flow[:completed]
+    current_step = auth_flow["step"]
+    completed = auth_flow["completed"]
 
     # 認証の順序と次のステップを決定
     case current_step
@@ -146,7 +170,7 @@ class OmniauthCallbacksController < ApplicationController
       # GitHub認証のステップ
       if completed.include?("github")
         # GitHubが完了したらTwitterへ
-        auth_flow[:step] = 2
+        auth_flow["step"] = 2
         redirect_to auth_flow_twitter_path
       else
         # まだGitHubが完了していなければGitHubへ
@@ -156,7 +180,7 @@ class OmniauthCallbacksController < ApplicationController
       # Twitter認証のステップ
       if completed.include?("twitter2")
         # Twitterが完了したらGoogleへ
-        auth_flow[:step] = 3
+        auth_flow["step"] = 3
         redirect_to auth_flow_google_path
       else
         # まだTwitterが完了していなければTwitterへ
@@ -166,7 +190,7 @@ class OmniauthCallbacksController < ApplicationController
       # Google認証のステップ
       if completed.include?("google_oauth2")
         # 全ての認証が完了
-        auth_flow[:step] = 4
+        auth_flow["step"] = 4
 
         # 認証完了後の処理
         redirect_to auth_flow_complete_path
@@ -182,7 +206,7 @@ class OmniauthCallbacksController < ApplicationController
 
   def finalize_auth_flow
     # 完了したプロバイダーを取得
-    completed_providers = session[:auth_flow][:completed].uniq
+    completed_providers = session[:auth_flow]["completed"].uniq
 
     # 認証フローをリセット
     reset_auth_flow
@@ -203,12 +227,12 @@ class OmniauthCallbacksController < ApplicationController
   end
 
   def mark_auth_step_completed(provider)
-    session[:auth_flow][:completed] ||= []
-    session[:auth_flow][:completed] << provider unless session[:auth_flow][:completed].include?(provider)
+    session[:auth_flow]["completed"] ||= []
+    session[:auth_flow]["completed"] << provider unless session[:auth_flow]["completed"].include?(provider)
   end
 
   def advance_auth_flow
-    session[:auth_flow][:step] = session[:auth_flow][:step] + 1
+    session[:auth_flow]["step"] = session[:auth_flow]["step"] + 1
   end
 
   # 以下は既存のヘルパーメソッド
