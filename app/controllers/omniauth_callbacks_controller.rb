@@ -185,8 +185,9 @@ class OmniauthCallbacksController < ApplicationController
         redirect_to auth_flow_google_path and return
       end
     else
-      # 想定外のステップの場合はダッシュボードへ
-      redirect_to rankings_index_path and return
+      # 想定外のステップの場合はログイン画面へ
+      reset_auth_flow
+      redirect_to login_path, alert: "認証フローが不正な状態です。最初からやり直してください。" and return
     end
   end
 

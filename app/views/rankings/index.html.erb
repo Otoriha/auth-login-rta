@@ -36,7 +36,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">順位</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名前</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイム</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">完了日時</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">達成日時</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -44,7 +44,7 @@
                 <tr class="<%= current_user && user.id == current_user.id ? 'bg-indigo-50' : '' %>">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <% if index < 3 %>
-                      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full 
+                      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full
                         <%= index == 0 ? 'bg-yellow-400' : index == 1 ? 'bg-gray-300' : 'bg-yellow-700' %> text-white font-bold">
                         <%= index + 1 %>
                       </span>
@@ -61,7 +61,7 @@
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <%= user.auth_completed_at.strftime('%Y年%m月%d日 %H:%M:%S') %>
+                    <%= user.auth_completed_at.in_time_zone('Tokyo').strftime('%Y年%m月%d日 %H:%M:%S') %>
                   </td>
                 </tr>
               <% end %>

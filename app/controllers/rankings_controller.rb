@@ -14,7 +14,16 @@ class RankingsController < ApplicationController
 
   def reset_record
     if current_user
-      current_user.update(auth_started_at: nil, auth_completed_at: nil, auth_duration: nil)
+      # 認証情報をリセット
+      current_user.update(
+        auth_started_at: nil,
+        auth_completed_at: nil,
+        auth_duration: nil
+      )
+      # 認証フローのセッションをリセット
+      session[:auth_flow] = nil
+      # ユーザーセッションをリセット
+      session[:user_id] = nil
       flash[:notice] = "記録をリセットしました。もう一度ログインRTAにチャレンジできます！"
     end
     redirect_to login_path
