@@ -16,6 +16,7 @@ class RankingsController < ApplicationController
     if current_user
       # 認証情報をリセット
       current_user.update(
+        name: nil,
         auth_started_at: nil,
         auth_completed_at: nil,
         auth_duration: nil
