@@ -20,6 +20,8 @@ class RankingsController < ApplicationController
         auth_completed_at: nil,
         auth_duration: nil
       )
+      # 認証情報（Authentication）を削除
+      current_user.authentications.destroy_all
       # 認証フローのセッションをリセット
       session[:auth_flow] = nil
       # ユーザーセッションをリセット
