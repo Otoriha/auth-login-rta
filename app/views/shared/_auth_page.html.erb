@@ -1,0 +1,19 @@
+<div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  <h1 class="text-2xl font-bold mb-6 text-center">ステップ<%= step %>: <%= title %>認証</h1>
+
+  <%= render 'shared/auth_progress' %>
+
+  <div class="text-center mb-8">
+    <div class="w-24 h-24 mx-auto mb-4">
+      <%= icon %>
+    </div>
+    <p class="text-lg font-medium mb-2"><%= title %>で認証を行います</p>
+    <p class="text-gray-600 mb-6"><%= description %></p>
+  </div>
+
+  <div class="text-center">
+    <%= button_to "/auth/#{provider}", method: :post, data: { turbo: false }, class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300" do %>
+      <%= title %>で認証する
+    <% end %>
+  </div>
+</div>
