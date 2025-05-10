@@ -1,59 +1,66 @@
 <% if session[:auth_flow].present? %>
-  <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6 mb-6">
-    <h2 class="text-xl font-semibold mb-4">ログインRTA 進捗状況</h2>
+  <div class="max-w-md mx-auto bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 rounded-xl shadow-lg p-8 mb-6 border border-indigo-100 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-indigo-100/30 to-purple-100/30 backdrop-blur-sm"></div>
+    <div class="relative">
+      <h2 class="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent">ログインRTA 進捗状況</h2>
 
-    <div class="flex items-center justify-between mb-2">
-      <% steps = [
-        { name: "GitHub", provider: "github" },
-        { name: "X (Twitter)", provider: "twitter2" },
-        { name: "Google", provider: "google_oauth2" }
-      ] %>
+      <div class="flex items-center justify-between mb-6">
+        <% steps = [
+          { name: "GitHub", provider: "github", color: "from-gray-800 to-gray-900", bg: "from-gray-100 to-gray-200" },
+          { name: "X (Twitter)", provider: "twitter2", color: "from-blue-400 to-blue-500", bg: "from-blue-100 to-blue-200" },
+          { name: "Google", provider: "google_oauth2", color: "from-red-500 to-red-600", bg: "from-red-100 to-red-200" }
+        ] %>
 
-      <% steps.each_with_index do |step, index| %>
-        <%
-          current_step = session[:auth_flow]["step"].to_i
-          is_completed = session[:auth_flow]["completed"]&.include?(step[:provider])
-          is_current = current_step == index + 1
-          status_class = is_completed ? "bg-emerald-600 text-white" :
-                         is_current ? "bg-blue-600 text-white animate-pulse" : "bg-gray-300"
-          status_text = is_completed ? "完了" : is_current ? "進行中" : "未着手"
-        %>
-
-        <div class="flex flex-col items-center">
-          <div class="relative">
-            <div class="w-12 h-12 flex items-center justify-center rounded-full <%= status_class %> font-bold">
-              <%= index + 1 %>
-            </div>
-            <% if is_completed %>
-              <div class="absolute -top-1 -right-1 w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-            <% end %>
-          </div>
-          <span class="mt-2 text-sm font-medium"><%= step[:name] %></span>
-          <span class="text-xs <%= is_current ? 'text-blue-600 font-bold' : is_completed ? 'text-emerald-600' : 'text-gray-500' %>">
-            <%= status_text %>
-          </span>
-        </div>
-
-        <% if index < steps.length - 1 %>
+        <% steps.each_with_index do |step, index| %>
           <%
-            line_class = if index < current_step - 1
-                          "bg-emerald-600"
-                        else
-                          "bg-gray-300"
-                        end
+            current_step = session[:auth_flow]["step"].to_i
+            is_completed = session[:auth_flow]["completed"]&.include?(step[:provider])
+            is_current = current_step == index + 1
+            status_class = is_completed ? "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-200" :
+                           is_current ? "bg-gradient-to-br #{step[:color]} text-white shadow-lg shadow-blue-200 animate-pulse" : 
+                           "bg-gradient-to-br #{step[:bg]} text-gray-500"
+            status_text = is_completed ? "完了" : is_current ? "進行中" : "未着手"
           %>
-          <div class="flex-1 h-1.5 <%= line_class %>"></div>
-        <% end %>
-      <% end %>
-    </div>
 
-    <div class="mt-4 text-gray-600 text-sm">
-      <p>現在のステップ: <%= session[:auth_flow]["step"] %> / 3</p>
-      <p>開始時間: <%= Time.parse(session[:auth_flow]["started_at"].to_s).strftime('%H:%M:%S') if session[:auth_flow]["started_at"] %></p>
+          <div class="flex flex-col items-center group">
+            <div class="relative">
+              <div class="w-14 h-14 flex items-center justify-center rounded-full <%= status_class %> font-bold transition-all duration-300 transform group-hover:scale-110">
+                <%= index + 1 %>
+              </div>
+              <% if is_completed %>
+                <div class="absolute -top-1 -right-1 w-7 h-7 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-emerald-200">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              <% end %>
+            </div>
+            <span class="mt-3 text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors duration-300"><%= step[:name] %></span>
+            <span class="text-xs <%= is_current ? 'text-blue-600 font-bold' : is_completed ? 'text-emerald-600' : 'text-gray-500' %>">
+              <%= status_text %>
+            </span>
+          </div>
+
+          <% if index < steps.length - 1 %>
+            <%
+              line_class = if index < current_step - 1
+                            "bg-gradient-to-r from-emerald-500 to-emerald-600"
+                          elsif is_current
+                            "bg-gradient-to-r #{step[:color]}"
+                          else
+                            "bg-gradient-to-r from-gray-200 to-gray-300"
+                          end
+            %>
+            <div class="flex-1 h-1.5 rounded-full <%= line_class %> transition-all duration-300"></div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="mt-6 text-center">
+        <p class="text-gray-600 font-medium bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 py-2 px-4 rounded-lg inline-block shadow-sm border border-indigo-100">
+          現在のステップ: <span class="text-blue-600 font-bold"><%= session[:auth_flow]["step"] %> / 3</span>
+        </p>
+      </div>
     </div>
   </div>
 <% end %>

@@ -18,9 +18,12 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-100/30 via-indigo-100/30 to-purple-100/30 backdrop-blur-sm"></div>
+    <div class="relative">
+      <main class="container mx-auto mt-28 px-5 flex">
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>
